@@ -1,8 +1,7 @@
-
-// server-request for search 
-
 // server request for the movie selected
-const onMovieSelect = async (movie, summaryElement) => {
+let leftMovie;
+let rightMovie;
+const onMovieSelect = async (movie, summaryElement, side) => {
     const response = await axios.get('http://www.omdbapi.com/', {
         params:{
             apikey:"a7d4986a",
@@ -10,6 +9,26 @@ const onMovieSelect = async (movie, summaryElement) => {
         }
     });
     summaryElement.innerHTML = movieTemplate(response.data);
+
+    if (side === 'left'){
+        leftMovie = response.data;
+    }else {
+        rightMovie= response.data;
+    }
+
+    if (leftMovie && rightMovie){
+        runComparaison();
+    }
+}
+
+const runComparaison = () => {
+    // find the first article element for each movie
+    // run a comparaison of box office
+    // apply some styling to the "article" element
+
+    // find the first article element for each movie
+    // run a comparaison of # of awards
+    // apply some styling to the "article" element
 }
 
 const autoCompleteConfig ={
@@ -43,7 +62,7 @@ createAutoComplete({
     root: document.querySelector("#left-autocomplete"),
     onOptionSelect(movie){
         document.querySelector('.tutorial').classList.add('is-hidden')
-        onMovieSelect(movie, document.querySelector('#left-summary'))
+        onMovieSelect(movie, document.querySelector('#left-summary'), 'left')
     },
 })
 createAutoComplete({
@@ -51,12 +70,20 @@ createAutoComplete({
     root: document.querySelector("#right-autocomplete"),
     onOptionSelect(movie){
         document.querySelector('.tutorial').classList.add('is-hidden')
-        onMovieSelect(movie, document.querySelector('#right-summary'))
+        onMovieSelect(movie, document.querySelector('#right-summary'), 'right')
     },
 })
 
 
 const movieTemplate = movieDetail => {
+
+    const dollars = parseInt(movieDetail.BoxOffice.replace(/\$/g,'').replace(/,/g,''));
+    const metascore = parseInt(movieDetail.Metascore)
+    const imdbRating = parseFloat(movieDetail.imdbRating)
+    const imdbVotes = parseInt(movieDetail.imdbVotes.replace(/,/g, ''))
+
+    console.log(metascore, imdbRating, imdbVotes );
+
     return `
     <article class="media">
         <figure class="media-left">
@@ -72,13 +99,14 @@ const movieTemplate = movieDetail => {
                 </div>
             </div>
     </article>
-    <article class="notification is-primary">
-        <p class="title"> ${movieDetail.Awards}</p>
-        <p class="subtitle">Awards</p>
-    </article>
+    
     <article class="notification is-primary">
         <p class="title"> ${movieDetail.BoxOffice}</p>
         <p class="subtitle">Box Office</p>
+    </article>
+    <article class="notification is-primary">
+        <p class="title"> ${movieDetail.Awards}</p>
+        <p class="subtitle">Awards</p>
     </article>
     <article class="notification is-primary">
         <p class="title"> ${movieDetail.Metascore}</p>
