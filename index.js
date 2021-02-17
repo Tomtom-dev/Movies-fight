@@ -22,6 +22,23 @@ const onMovieSelect = async (movie, summaryElement, side) => {
 }
 
 const runComparaison = () => {
+    const leftSideStats = document.querySelectorAll("#left-summary .notification");
+    const rightSideStats = document.querySelectorAll("#right-summary .notification");
+
+
+    leftSideStats.forEach((leftStat, index) => {
+        const rightStat = rightSideStats[index]
+        leftSideValue = parseInt(leftStat.dataset.value);
+        rightSideValue = parseInt(rightStat.dataset.value);
+
+        if(rightSideValue > leftSideValue){
+            leftStat.classList.remove("is-primary")
+            leftStat.classList.add("is-warning")
+        }else {
+            rightStat.classList.remove("is-primary")
+            rightStat.classList.add("is-warning")
+        }
+    })
     // find the first article element for each movie
     // run a comparaison of box office
     // apply some styling to the "article" element
@@ -91,9 +108,6 @@ const movieTemplate = movieDetail => {
         }
     }, 0)
     
-
-    console.log(awards);
-
     return `
     <article class="media">
         <figure class="media-left">
